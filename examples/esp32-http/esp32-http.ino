@@ -1,6 +1,6 @@
 // infinimesh ESP32 HTTP example.
 // Posts reported state with a device token every 30 seconds over HTTPS,
-// then reads the device state back and prints the desired part.
+// then reads the desired state and prints it.
 //
 // Uses only the Arduino esp32 core (WiFi, WiFiClientSecure, HTTPClient).
 
@@ -28,35 +28,29 @@ String auth;
 
 void postReported() {
   HTTPClient http;
-  http.begin(net, String(API_URL) + "/devices/states");
+  http.begin(net, String(API_URL) + "/v1/ingest");
   http.addHeader("Authorization", auth);
   http.addHeader("Content-Type", "application/json");
   float temp = 20.0 + (esp_random() % 100) / 10.0;
-  // Body is a Shadow: device id plus reported.data with your own JSON.
-  String body = String("{\"device\":\"") + DEVICE_ID +
-                "\",\"reported\":{\"data\":{\"temp\":" + String(temp, 1) +
-                ",\"uptime\":" + String(millis() / 1000) + "}}}";
+  // Body is your own JSON object (max 16 KB). It becomes the reported state.
+  String body =
+      String("{\"temp\":") + String(temp, 1) + ",\"uptime\":" + String(millis() / 1000) + "}";
   int code = http.POST(body);
-  Serial.printf("POST /devices/states -> %d, sent %s\n", code, body.c_str());
-  if (code != 200) Serial.println(http.getString());
+  Serial.printf("POST /v1/ingest -> %d, sent %s\n", code, body.c_str());
+  if (code != 204) Serial.println(http.getString());
   http.end();
 }
 
 void readDesired() {
   HTTPClient http;
-  http.begin(net, String(API_URL) + "/devices/states");
+  http.begin(net, String(API_URL) + "/v1/ingest/desired");
   http.addHeader("Authorization", auth);
   int code = http.GET();
   if (code == 200) {
-    // Response: {"shadows":[{"device":..., "reported":{...}, "desired":{"data":{...}}}]}
-    String res = http.getString();
-    int i = res.indexOf("\"desired\"");
-    Serial.printf("GET /devices/states -> 200, desired: %s\n",
-                  i >= 0
-                      ? res.substring(i, res.indexOf('}', res.indexOf("\"data\"", i)) + 1).c_str()
-                      : "none");
+    // Response: the desired JSON, for example {"led":true}
+    Serial.printf("GET /v1/ingest/desired -> 200, desired: %s\n", http.getString().c_str());
   } else {
-    Serial.printf("GET /devices/states -> %d\n", code);
+    Serial.printf("GET /v1/ingest/desired -> %d\n", code);
   }
   http.end();
 }

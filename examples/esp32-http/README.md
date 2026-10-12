@@ -5,8 +5,8 @@ An Arduino sketch for the ESP32 that talks to infinimesh over HTTPS with a devic
 ## What it does
 
 - Connects to WiFi and sets the clock with NTP.
-- Every 30 seconds sends reported state with `POST /devices/states`.
-- Then reads `GET /devices/states` and prints the desired part.
+- Every 30 seconds sends reported state with `POST /v1/ingest`.
+- Then reads `GET /v1/ingest/desired` and prints it.
 
 Good for boards that wake up, send one value and go back to sleep.
 
@@ -28,13 +28,13 @@ Edit the top of `esp32-http.ino`:
 
 ## Request body
 
-`POST /devices/states` takes a Shadow:
+`POST /v1/ingest` takes your own JSON object, at most 16 KB:
 
 ```json
-{"device": "<device-id>", "reported": {"data": {"temp": 21.5}}}
+{"temp": 21.5, "uptime": 5}
 ```
 
-Your own JSON goes inside `reported.data`. `GET /devices/states` returns `{"shadows": [...]}` for every device in the token.
+It becomes the reported state of the device named in the token. Success is `204`. `400` means the body is not a JSON object or is too large, `401` a bad token, `403` a token that names more than one device or may not post, and `429` more than 60 requests a minute. `GET /v1/ingest/desired` returns the desired JSON, for example `{"led": true}`.
 
 ## Get a device token
 
@@ -42,7 +42,7 @@ Your own JSON goes inside `reported.data`. `GET /devices/states` returns `{"shad
 inf devices token <device-id> --allow-post
 ```
 
-or with the API, see [../curl/README.md](../curl/README.md). Device tokens do not expire today.
+or with the API, see [../curl/README.md](../curl/README.md). The token must name only this device. Without `expires_at` it expires after 24 hours, so long-running devices need a token with a later `expires_at`.
 
 ## Build
 
@@ -54,16 +54,12 @@ arduino-cli compile --fqbn esp32:esp32:esp32 examples/esp32-http
 
 ```text
 WiFi..... connected
-POST /devices/states -> 200, sent {"device":"<id>","reported":{"data":{"temp":24.1,"uptime":5}}}
-GET /devices/states -> 200, desired: "desired":{"timestamp":"...","data":{"led":true}
+POST /v1/ingest -> 204, sent {"temp":24.1,"uptime":5}
+GET /v1/ingest/desired -> 200, desired: {"led":true}
 ```
-
-## Note
-
-This endpoint may move to a smaller `/v1/ingest` endpoint later.
 
 ## Tested
 
 - Compiles in CI for `esp32:esp32:esp32`.
-- The same requests (body, headers, token) were tested live against core with the [curl](../curl) script on 12 October 2026.
+- The same requests (body, headers, token) are the ones the [curl](../curl) script sends.
 - It has not been run on a real ESP32 yet.
