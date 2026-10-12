@@ -10,5 +10,5 @@ exclude = [
 exclude_path = [".git"]
 max_retries = 2
 timeout = 20
-accept = ["200..=299", "403", "429"]
+accept = ["200..=299", "403", "429", "503"]  # 429 and 503 are GitHub throttling, not dead links
 include_fragments = false
