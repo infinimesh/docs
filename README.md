@@ -18,6 +18,7 @@ Each example is one sketch or script with a short README.
 ## Guides
 
 - [guides/small-devices-tls.md](guides/small-devices-tls.md): why TLS fails on small chips like the ESP8266, and how to fix it.
+- [guides/node-red.md](guides/node-red.md): send device data to Node-RED with the MQTT bridge or webhook addon.
 
 ## Good to know
 
