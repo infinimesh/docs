@@ -33,8 +33,8 @@ void postReported() {
   http.addHeader("Content-Type", "application/json");
   float temp = 20.0 + (esp_random() % 100) / 10.0;
   // Body is your own JSON object (max 16 KB). It becomes the reported state.
-  String body = String("{\"temp\":") + String(temp, 1) +
-                ",\"uptime\":" + String(millis() / 1000) + "}";
+  String body =
+      String("{\"temp\":") + String(temp, 1) + ",\"uptime\":" + String(millis() / 1000) + "}";
   int code = http.POST(body);
   Serial.printf("POST /v1/ingest -> %d, sent %s\n", code, body.c_str());
   if (code != 204) Serial.println(http.getString());
