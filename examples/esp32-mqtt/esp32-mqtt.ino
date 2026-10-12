@@ -12,9 +12,9 @@
 // ---- Config: change these ----
 const char* WIFI_SSID = "your-wifi";
 const char* WIFI_PASS = "your-password";
-const char* MQTT_URI = "mqtts://mqtt.example.com:8883";  // your infinimesh MQTT host
+const char* MQTT_URI = "mqtts://mqtt.example.com:8883";          // your infinimesh MQTT host
 const char* DEVICE_ID = "00000000-0000-0000-0000-000000000000";  // device uuid
-const int PUBLISH_QOS = 1;  // 0 or 1
+const int PUBLISH_QOS = 1;                                       // 0 or 1
 
 // CA that signed the server certificate. For Let's Encrypt use ISRG Root X1.
 // For a local test, paste core's hack/server.crt.
@@ -60,8 +60,8 @@ static void onEvent(void* args, esp_event_base_t base, int32_t id, void* data) {
       Serial.printf("PUBACK for message %d\n", event->msg_id);
       break;
     case MQTT_EVENT_DATA:
-      Serial.printf("Desired state on %.*s: %.*s\n",
-                    event->topic_len, event->topic, event->data_len, event->data);
+      Serial.printf("Desired state on %.*s: %.*s\n", event->topic_len, event->topic,
+                    event->data_len, event->data);
       break;
     case MQTT_EVENT_ERROR:
       Serial.println("MQTT error (check certificates, host and device id)");

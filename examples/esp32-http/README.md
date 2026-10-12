@@ -52,7 +52,7 @@ arduino-cli compile --fqbn esp32:esp32:esp32 examples/esp32-http
 
 ## Expected output (serial, 115200)
 
-```
+```text
 WiFi..... connected
 POST /devices/states -> 200, sent {"device":"<id>","reported":{"data":{"temp":24.1,"uptime":5}}}
 GET /devices/states -> 200, desired: "desired":{"timestamp":"...","data":{"led":true}

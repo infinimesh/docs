@@ -19,25 +19,25 @@ None.
 2. Install the MQTT library: `mpremote mip install umqtt.simple`
 3. Make the device key and certificate (EC P-256 is fastest) and convert them to DER:
 
-```bash
-openssl ecparam -name prime256v1 -genkey -noout -out device.key
-openssl req -new -x509 -sha256 -key device.key -out device.crt -days 365 -subj "/CN=my-pico"
-openssl x509 -in device.crt -outform DER -out device.der
-openssl ec -in device.key -outform DER -out key.der
-openssl x509 -in isrgrootx1.pem -outform DER -out ca.der   # or your server CA
-```
+   ```bash
+   openssl ecparam -name prime256v1 -genkey -noout -out device.key
+   openssl req -new -x509 -sha256 -key device.key -out device.crt -days 365 -subj "/CN=my-pico"
+   openssl x509 -in device.crt -outform DER -out device.der
+   openssl ec -in device.key -outform DER -out key.der
+   openssl x509 -in isrgrootx1.pem -outform DER -out ca.der   # or your server CA
+   ```
 
 4. Register `device.crt` when you create the device (see [../esp32-mqtt/README.md](../esp32-mqtt/README.md)).
 5. Edit the config at the top of `main.py`, then copy the files:
 
-```bash
-mpremote cp device.der key.der ca.der main.py :
-mpremote reset
-```
+   ```bash
+   mpremote cp device.der key.der ca.der main.py :
+   mpremote reset
+   ```
 
 ## Expected output
 
-```
+```text
 WiFi connected 192.168.1.43
 MQTT connected
 Published {"temp": 21.5, "uptime": 14}

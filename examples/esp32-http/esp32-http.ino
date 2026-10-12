@@ -11,7 +11,7 @@
 // ---- Config: change these ----
 const char* WIFI_SSID = "your-wifi";
 const char* WIFI_PASS = "your-password";
-const char* API_URL = "https://api.example.com";  // infinimesh REST gateway
+const char* API_URL = "https://api.example.com";                 // infinimesh REST gateway
 const char* DEVICE_ID = "00000000-0000-0000-0000-000000000000";  // device uuid
 const char* DEVICE_TOKEN = "paste the device token here";
 
@@ -52,7 +52,9 @@ void readDesired() {
     String res = http.getString();
     int i = res.indexOf("\"desired\"");
     Serial.printf("GET /devices/states -> 200, desired: %s\n",
-                  i >= 0 ? res.substring(i, res.indexOf('}', res.indexOf("\"data\"", i)) + 1).c_str() : "none");
+                  i >= 0
+                      ? res.substring(i, res.indexOf('}', res.indexOf("\"data\"", i)) + 1).c_str()
+                      : "none");
   } else {
     Serial.printf("GET /devices/states -> %d\n", code);
   }
