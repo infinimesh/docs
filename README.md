@@ -25,7 +25,7 @@ Each example is one sketch or script with a short README.
 - Devices bring their own MQTT or HTTP client. infinimesh has no device SDK.
 - MQTT topics: a device publishes to `devices/<id>/state/reported` and subscribes to `devices/<id>/state/desired`. `<id>` is the device uuid.
 - Boards without TLS (for example ATmega Arduinos) should talk to a local gateway, such as a Raspberry Pi or an ESP32, which then connects to infinimesh over TLS. See the guide above.
-- The HTTP path `POST /devices/states` may change to a smaller `/v1/ingest` endpoint later. We will update the examples when it does.
+- HTTP devices send their own JSON with `POST /v1/ingest` and a device token, and read desired state with `GET /v1/ingest/desired`. The v1 API is stable, see [API versioning](https://github.com/infinimesh/core/blob/main/docs/api-versioning.md).
 - The boards themselves have not been tested yet. What was tested is listed in each README.
 
 ## Check before you commit
