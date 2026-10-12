@@ -55,7 +55,7 @@ arduino-cli compile --fqbn esp32:esp32:esp32 examples/esp32-mqtt
 
 ## Expected output (serial, 115200)
 
-```
+```text
 WiFi..... connected, IP 192.168.1.42
 MQTT connected
 Published {"temp":23.4,"uptime":12} (id 12345)

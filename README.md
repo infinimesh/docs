@@ -34,7 +34,7 @@ Each example is one sketch or script with a short README.
 make commit-check
 ```
 
-This runs shellcheck, a MicroPython compile check, and `arduino-cli compile` for both ESP32 sketches.
+This runs `make lint` and then compiles the examples. `make lint` runs shellcheck, markdownlint, a lychee link check, clang-format on the sketches, actionlint, yamllint and gitleaks. The compile step runs a MicroPython compile check and `arduino-cli compile` for both ESP32 sketches. On Linux, `sh scripts/install-lint-tools.sh` installs the lint tools; on macOS use `brew install shellcheck markdownlint-cli2 lychee clang-format actionlint yamllint gitleaks`.
 
 ## License
 

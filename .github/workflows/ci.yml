@@ -9,12 +9,19 @@ permissions:
   contents: read
 
 jobs:
-  shellcheck:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
       - run: sudo apt-get update && sudo apt-get install -y shellcheck
-      - run: make shellcheck
+      - run: sh scripts/install-lint-tools.sh
+      - run: make lint
 
   micropython:
     runs-on: ubuntu-latest

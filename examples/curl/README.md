@@ -48,7 +48,7 @@ INF_API=https://api.example.com DEVICE_ID=<uuid> DEVICE_TOKEN=<token> ./infinime
 
 ## Expected output
 
-```
+```text
 Posting reported state: temp=21.5
 Reading state back
 {
