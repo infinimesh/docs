@@ -84,18 +84,42 @@ The order matters:
    inf ns update <namespace> --ota --provider hawkbit
    ```
 
-4. Assign a version as the addon. `--token` applies to one command and does not replace your stored login.
+4. Ask for a version with your account login. With provider hawkbit, mender or webhook, `inf ota assign` calls `POST /v1/devices/ota:request` and stores `desired.ota.requested_version`. Core publishes `OTA_REQUESTED`, and the addon picks it up.
 
    ```bash
-   inf --token "$ADDON_TOKEN" ota assign --namespace <namespace> --version 1.2.3
+   inf ota assign --namespace <namespace> --version 1.2.3
+   inf ota assign --device <device> --version 1.2.3
+   ```
+
+5. The addon sets the target. Only the addon token may write `desired.ota.version` for those providers. `--token` applies to one command and does not replace your stored login.
+
+   ```bash
    inf --token "$ADDON_TOKEN" ota assign --device <device> --version 1.2.3
    ```
 
-With provider `none`, an account with manage access can assign. With hawkbit, mender or webhook, only the addon token can. An admin token is refused per device.
+   An addon token on the request path gets a top-level `ota request needs an account token`. An account token cannot write `desired.ota.version` for those providers. With provider `none`, an account with manage access assigns directly and `ota assign` stores `version`.
+
+The request path and the rules below need core and `inf` 3.4.1 or newer.
+
+### What the addon token can do
+
+The addon token may write `desired.ota.version`, may patch `reported.ota` when the patch holds only `ota`, and may open the shadow stream read-only for a namespace it serves. Any other reported key is refused with `reported patch may contain only ota`. It cannot set `desired.ota.requested_version`.
+
+Rotate a leaked or old token with a root login:
+
+```bash
+inf plugins rotate <plugin-uuid>
+```
+
+The new token is printed once. The old one is denied at once, and any stream open with it stops on every API process. The plugin stays registered, so OTA stays on. The rotate is recorded in the audit log as `plugin_rotate`.
+
+### Stream resume and resync
+
+An addon follows the shadow stream and resumes after the last `sequence` it saw. Core keeps the last 256 events per namespace for that replay. A resume from before that window closes with `resume window exceeded`. A client that reads too slowly gets the updates still queued, then a close with `shadow stream fell behind`. Both come back as Aborted. Reopen the stream with `sync` true to read the current state of every device. The addons SDK does that on its own and logs the gap. Details are in the [shadow docs](https://github.com/infinimesh/core/blob/main/docs/shadow.md).
 
 ### Bulk assign returns 200 even when devices fail
 
-`ota assign` is a bulk call. It needs `--version` and one of `--namespace`, `--tag` or `--device`. The call succeeds as a whole and returns a result per device. A refused device shows up as an error in its own row, with `updated 0`, not as a failed command. Read the per-device results. A device token is rejected outright with "bulk assign needs an account or addon token".
+`ota assign` is a bulk call. It needs `--version` and one of `--namespace`, `--tag` or `--device`. The call succeeds as a whole and returns a result per device. A refused device shows up as an error in its own row, with `updated 0`, not as a failed command. Read the per-device results. A device token is rejected outright with "bulk assign needs an account or addon token". The request path works the same way: a device the account cannot write is an error in its own row.
 
 ## Audit
 
@@ -103,7 +127,7 @@ With provider `none`, an account with manage access can assign. With hawkbit, me
 inf audit --namespace <namespace>
 ```
 
-Alarm acks and clears, plugin create and delete, and OTA assigns are recorded. An assign made with an addon token is recorded under the plugin id.
+Alarm acks and clears, plugin create, delete and rotate, OTA requests and OTA assigns are recorded. An assign made with an addon token is recorded under the plugin id.
 
 ## Metrics
 
