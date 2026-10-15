@@ -17,7 +17,7 @@ Each example is one sketch or script with a short README.
 
 ## Guides
 
-- [guides/cli-getting-started.md](guides/cli-getting-started.md): the `inf` CLI on 3.4, from login on `:443` to quotas, rules, OTA addon registration and bulk assign.
+- [guides/cli-getting-started.md](guides/cli-getting-started.md): the `inf` CLI on 3.4, from login on `:443` to quotas, rules, OTA addon registration, the OTA request path, addon token rotation and bulk assign.
 - [guides/small-devices-tls.md](guides/small-devices-tls.md): why TLS fails on small chips like the ESP8266, and how to fix it.
 - [guides/node-red.md](guides/node-red.md): send device data to Node-RED with the MQTT bridge or webhook addon.
 
